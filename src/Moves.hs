@@ -3,16 +3,6 @@ module Moves where
 import Stats
 import Types
 
-data MoveSet = MoveSet { move_1 :: Maybe Move, move_2 :: Maybe Move, move_3 :: Maybe Move, move_4 :: Maybe Move}
-    deriving (Eq)
-instance Show MoveSet where
-    show (MoveSet a b c d) = show a <> ", " <> show b <> ", " <> show c <> ", " <> show d
-
-data Move = Move { moveName :: String, moveElem :: Types, moveType :: MoveType, movePP :: PP, movePower :: Int}
-    deriving (Eq)
-instance Show Move where
-    show move = "Move: " <> (moveName move) <> ", "<> show (moveElem move) <> " PP: " <> show (movePP move) <> " Power: " <> show (movePower move)
-
 standardMove :: Move
 standardMove = Move { moveName = "Standard", moveElem=Fire, moveType = Physical, movePP = (PP 5 5), movePower = 10}
 

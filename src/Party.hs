@@ -1,28 +1,34 @@
 module Party where
 
 import Homie
+import Stats
+import Data.Maybe (catMaybes)
+import Types
 
-data PartyIndex = H1 | H2 | H3 | H4
-data Party = Party { h1 :: Maybe Homie, h2 :: Maybe Homie, h3 :: Maybe Homie, h4 :: Maybe Homie }
-instance Show Party where
-    show party = show (h1 party) <> " | " <> show (h2 party) <> " | " <> show (h3 party) <> " | " <> show (h4 party)
-
+initParty :: Party
+initParty = Party { h1= Nothing, h2=Nothing, h3= Nothing, h4=Nothing }
 testParty :: Party
 testParty = Party { h1= Just testHomie, h2=Nothing, h3= Just testHomie2, h4=Nothing }
+testParty2 :: Party
+testParty2 = Party { h1= Just testHomie, h2=Nothing, h3= Nothing, h4=Nothing }
 
-swapPartyOrder :: PartyIndex -> PartyIndex -> Party -> Party
-swapPartyOrder pi pi' party = 
-    let maybeHomie = getPartyMember pi party
-    in case maybeHomie of
-        Just homie ->
-            let maybeHomie' = getPartyMember pi' party
-            in case maybeHomie' of
-                Just homie' ->
-                    let party' = pushHomiesForward $ setPartyMember pi maybeHomie' $ setPartyMember pi' maybeHomie party
-                    in party'
-                Nothing -> pushHomiesForward $ party
-        Nothing ->
-            pushHomiesForward $ party
+swapPartyOrder :: Int -> Int -> Party -> Party
+swapPartyOrder i j party =
+    let homies = partyToList party
+        temp = homies !! i
+        updatedList = replaceAtIndex j (homies !! i) (replaceAtIndex i (homies !! j) homies)
+    in listToParty updatedList
+
+replaceAtIndex :: Int -> a -> [a] -> [a]
+replaceAtIndex n item ls = take n ls ++ [item] ++ drop (n + 1) ls
+
+listToParty :: [Homie] -> Party
+listToParty hs = 
+    let [h1, h2, h3, h4] = take 4 (map Just hs ++ repeat Nothing)
+    in Party h1 h2 h3 h4
+
+partyToList :: Party -> [Homie]
+partyToList (Party h1 h2 h3 h4) = catMaybes [h1, h2, h3, h4]
 
 pushHomiesForward :: Party -> Party
 pushHomiesForward party =
@@ -33,19 +39,32 @@ pushHomiesForward party =
 
 
 
-getPartyMember :: PartyIndex -> Party -> Maybe Homie
-getPartyMember H1 p = h1 p
-getPartyMember H2 p = h2 p
-getPartyMember H3 p = h3 p
-getPartyMember H4 p = h4 p
+getPartyMember :: Int -> Party -> Maybe Homie
+getPartyMember 0 p = h1 p
+getPartyMember 1 p = h2 p
+getPartyMember 2 p = h3 p
+getPartyMember 3 p = h4 p
+getPartyMember _ p = Nothing
 
-setPartyMember :: PartyIndex -> Maybe Homie -> Party -> Party
-setPartyMember H1 homie party = party {h1 = homie}
-setPartyMember H2 homie party = party {h2 = homie}
-setPartyMember H3 homie party = party {h3 = homie}
-setPartyMember H4 homie party = party {h4 = homie}
+unsafePartyConvert :: Maybe Homie -> Homie
+unsafePartyConvert (Just x) = x
+unsafePartyConvert _ = testHomie
 
-removePartyMember :: PartyIndex -> Party -> Party
+setPartyMember :: Int -> Maybe Homie -> Party -> Party
+setPartyMember 0 homie party = party {h1 = homie}
+setPartyMember 1 homie party = party {h2 = homie}
+setPartyMember 2 homie party = party {h3 = homie}
+setPartyMember 3 homie party = party {h4 = homie}
+setPartyMember _ _ party = party
+
+removePartyMember :: Int -> Party -> Party
 removePartyMember ix party = setPartyMember ix Nothing party
+
+isPartyDead :: [Homie] -> Bool
+isPartyDead (x:xs) = isHPZero (homieStats x) && isPartyDead xs
+isPartyDead [] = True
+
+partySize :: Party -> Int
+partySize p = length $ partyToList p
 
 -- TODO: USE ITEM

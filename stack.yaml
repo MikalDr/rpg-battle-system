@@ -17,8 +17,7 @@
 #
 # resolver: ./custom-snapshot.yaml
 # resolver: https://example.com/snapshots/2018-01-01.yaml
-resolver:
-  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/19.yaml
+resolver: lts-17.15
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -41,8 +40,11 @@ packages:
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #
 extra-deps:
-  - random-1.2.0
+  - random-1.1@sha256:7b67624fd76ddf97c206de0801dc7e888097e9d572974be9b9ea6551d76965df,1777
+  - terminfo-0.4.1.6@sha256:fb0e7f56eb6ab259c03057b18eeb373d7f9acad45b2167f4c1eb4e80f10459a0,1658
+  - unix-2.8.5.0@sha256:256e42f032dfd7ef13d0ea3f4104a1f0883d93ccade0b11f26ea790ef8001259,10206
   - vty-windows-0.2.0.2@sha256:add74928c695b83f651116a73171b097524c7989d2b08c7c6e2816c982047cab,2815
+  - mtl-2.2.2
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
