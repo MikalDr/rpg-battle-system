@@ -24,6 +24,7 @@ dependencies:
 - mtl
 - random
 - transformers
+- QuickCheck
 
 
 ghc-options:
@@ -61,3 +62,5 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - battleSystem
+    - base
+    - QuickCheck
