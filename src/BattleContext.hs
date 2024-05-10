@@ -25,6 +25,7 @@ type BattleState = StateT BattleContext IO
 testContext = BattleContext {duel = testDuel, playerParty = testParty, playerBag=startBag, opponentParty = testParty2, opponentType = AINormal, gameQuit = False, winner = False}
 
 initContext :: Party -> Party -> Bag -> BattleContext
+-- Alot of variables
 initContext pp op bag = BattleContext {duel = (initDuel pp op) , playerParty = pp, playerBag=bag, opponentParty = testParty2, opponentType = AINormal, gameQuit = False, winner = False}
 
 initBattleState :: BattleState BattleContext

@@ -4,6 +4,7 @@ import Types
 import Stats
 import Moves
 import System.Random (randomRIO)
+import Control.Monad.Reader
 
 testHomie :: Homie
 testHomie = Homie { homieName = "Kaspar", homieLevel=(Level 5 25), homieType = Fire, homieMoves = standardMoveSet, homieStats = testStatBlock}
@@ -12,32 +13,36 @@ testHomie2 = Homie { homieName = "Nils", homieLevel=(Level 5 25), homieType = Wa
 testHomie3 :: Homie
 testHomie3 = Homie { homieName = "Einem", homieLevel=(Level 5 25), homieType = Grass, homieMoves = standardMoveSet, homieStats = testStatBlock}
 
-getHomieAtk :: Homie -> Int
-getHomieAtk = atk . homieStats
+getHomieAtk :: Reader Homie Int
+getHomieAtk = do
+    homie <- ask
+    return (atk (homieStats homie))
 
-getHomieDef :: Homie -> Int
-getHomieDef = def . homieStats
+getHomieDef :: Reader Homie Int
+getHomieDef = asks (def . homieStats)
 
-getHomieSpc :: Homie -> Int
-getHomieSpc = spc . homieStats
+getHomieSpc :: Reader Homie Int
+getHomieSpc = asks (spc . homieStats)
 
-getHomieSpcDef :: Homie -> Int
-getHomieSpcDef = spdef . homieStats
+getHomieSpcDef :: Reader Homie Int
+getHomieSpcDef = asks (spdef . homieStats)
 
-getHomieLevel :: Homie -> Int
-getHomieLevel = level . homieLevel
+getHomieLevel :: Reader Homie Int
+getHomieLevel = asks level . homieLevel
 
-getHomieSpd :: Homie -> Int
-getHomieSpd = spd . homieStats
+getHomieSpd :: Reader Homie Int
+getHomieSpd = asks (spd . homieStats)
 
-getHomieMoveSet :: Homie -> MoveSet
-getHomieMoveSet = homieMoves
+getHomieMoveSet :: Reader Homie MoveSet
+getHomieMoveSet = asks homieMoves
 
-getHomieMove :: Int -> Homie -> Maybe Move
-getHomieMove 0 = move_1 . homieMoves
-getHomieMove 1 = move_2 . homieMoves
-getHomieMove 2 = move_3 . homieMoves
-getHomieMove 3 = move_4 . homieMoves
+getHomieMove :: Int -> Reader Homie (Maybe Move)
+getHomieMove n = asks $ case n of
+    0 -> move_1 . homieMoves
+    1 -> move_2 . homieMoves
+    2 -> move_3 . homieMoves
+    3 -> move_4 . homieMoves
+    _ -> const Nothing  -- Handling cases where n is not between 0 and 3
 
 zeroHPHomie :: Homie -> Bool
 zeroHPHomie homie = (currentHP$ hp $homieStats $ homie) <= 0
@@ -102,5 +107,3 @@ levelUp homie = do
 homieDeadString :: Homie -> String
 homieDeadString homie | (currentHP $ hp $ homieStats homie) <= 0 = " [DEAD]"
                       | otherwise = ""
-
--- Status Move
